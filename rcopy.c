@@ -21,8 +21,6 @@
 #include "createPrintPDU.h"
 #include "cpe464.h"
 
-// #define MAXBUF 80
-
 void talkToServer(int socketNum, struct sockaddr_in6 * server);
 int readFromStdin(char * buffer);
 int checkArgs(int argc, char * argv[], float *errorRate);
@@ -38,7 +36,7 @@ int main (int argc, char *argv[])
 	
     socketNum = setupUdpClientToServer(&server, argv[2], portNumber);
 
-    sendErr_init(errorRate, DROP_ON, FLIP_ON, DEBUG_ON, RSEED_OFF);
+    sendErr_init(errorRate, DROP_ON, FLIP_ON, DEBUG_ON, RSEED_ON);
 	
     talkToServer(socketNum, &server);
 	
@@ -50,7 +48,6 @@ int main (int argc, char *argv[])
 void talkToServer(int socketNum, struct sockaddr_in6 * server)
 {
     int serverAddrLen = sizeof(struct sockaddr_in6);
-    // char * ipString = NULL;
     int dataLen = 0; 
     char buffer[MAX_PDU_LEN];
 
@@ -72,9 +69,7 @@ void talkToServer(int socketNum, struct sockaddr_in6 * server)
 	safeSendto(socketNum, pduBuffer, pduLen, 0, (struct sockaddr *) server, serverAddrLen);
 		
 	recvLen = safeRecvfrom(socketNum, recvBuffer, MAX_PDU_LEN, 0, (struct sockaddr *) server, &serverAddrLen);
-		
-	// print out bytes received
-	// ipString = ipAddressToString(server);
+	
 	printPDU(recvBuffer, recvLen);
     }
 }

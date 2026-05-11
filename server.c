@@ -16,7 +16,6 @@
 #include "createPrintPDU.h"
 #include "cpe464.h"
 
-// #define MAXBUF 80
 
 void processClient(int socketNum);
 int checkArgs(int argc, char *argv[], float *errorRate);
@@ -33,7 +32,7 @@ int main ( int argc, char *argv[]  )
 
     processClient(socketNum);
 
-    sendErr_init(errorRate, DROP_ON, FLIP_ON, DEBUG_ON, RSEED_OFF);
+    sendErr_init(errorRate, DROP_ON, FLIP_ON, DEBUG_ON, RSEED_ON);
 
     close(socketNum);
 	
@@ -47,17 +46,12 @@ void processClient(int socketNum)
     struct sockaddr_in6 client;
     int clientAddrLen = sizeof(client);	
 	
-    // buffer[0] = '\0';
     while (1)
     {
 	dataLen = safeRecvfrom(socketNum, pduBuffer, MAX_PDU_LEN, 0, (struct sockaddr *) &client, &clientAddrLen);
 	
 	printPDU(pduBuffer, dataLen);
-	// printIPInfo(&client);
-	// printf(" Len: %d \'%s\'\n", dataLen, buffer);
-
-	// just for fun send back to client number of bytes received
-	// sprintf(buffer, "bytes: %d", dataLen);
+	
 	safeSendto(socketNum, pduBuffer, dataLen, 0, (struct sockaddr *) & client, clientAddrLen);
 
     }
